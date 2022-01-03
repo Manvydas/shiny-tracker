@@ -1,0 +1,83 @@
+shinyUI(
+  f7Page(
+    title = "Tab Layout",
+    f7TabLayout(
+      navbar = f7Navbar(
+        title = "workout tracker",
+        hairline = FALSE,
+        shadow = TRUE
+      ),
+      f7Tabs(
+        id = "tabdemo",
+        swipeable = TRUE,
+        animated = FALSE,
+        style = c("toolbar", "segmented", "strong"),
+        f7Tab(
+          tabName = "main",
+          active = TRUE,
+          icon = f7Icon("bolt_fill"),
+          f7Button(
+            inputId = "auth",
+            label = "Login"
+          )
+        ),
+        f7Tab(
+          tabName = "workouts",
+          active = TRUE,
+          f7Select(
+            inputId = "w_day_select",
+            label = "Day",
+            choices = 1:3
+          ),
+          uiOutput(
+            outputId = "w_day_summary"
+          )
+        ),
+        f7Tab(
+          tabName = "excer",
+          uiOutput(
+            outputId = "list_excers"
+          )
+        ),
+        f7Tab(
+          tabName = "new_excer",
+          f7Text(
+            inputId = "new_excer_name",
+            label = "Name of the new excercise"
+          ),
+          f7TextArea(
+            inputId = "new_excer_descr",
+            label = "Excercise description"
+          ),
+          f7Text(
+            inputId = "new_excer_url",
+            label = "Link to the image of exercise"
+          ),
+          f7Button(
+            inputId = "new_excer_save",
+            label = "Save"
+          )
+        ),
+        f7Tab(
+          tabName = "data",
+          "tab 3 text",
+              f7Sheet(
+                id = "sheet",
+                label = "More",
+                orientation = "bottom",
+                swipeToClose = TRUE,
+                swipeToStep = TRUE,
+                backdrop = TRUE,
+                "Issokantis langas"
+              )
+        ),
+        .items = f7TabLink(
+          icon = f7Icon("bolt_fill"),
+          label = "Toggle Sheet",
+          `data-sheet` = "#sheet",
+          class = "sheet-open"
+        )
+      )
+    )
+  )
+)

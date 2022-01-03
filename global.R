@@ -1,0 +1,8 @@
+library(shiny)
+library(shinyMobile)
+library(DBI)
+library(RPostgres)
+library(DT)
+library(dplyr)
+library(purrr)
+library(jsonlite)
