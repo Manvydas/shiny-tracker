@@ -19,11 +19,19 @@ shinyUI(
           f7Button(
             inputId = "auth",
             label = "Login"
+          ),
+          f7Sheet(
+            id = "sheet",
+            label = "More",
+            orientation = "bottom",
+            swipeToClose = TRUE,
+            swipeToStep = TRUE,
+            backdrop = TRUE,
+            "Issokantis langas"
           )
         ),
         f7Tab(
           tabName = "workouts",
-          active = TRUE,
           f7Select(
             inputId = "w_day_select",
             label = "Day",
@@ -57,19 +65,6 @@ shinyUI(
             inputId = "new_excer_save",
             label = "Save"
           )
-        ),
-        f7Tab(
-          tabName = "data",
-          "tab 3 text",
-              f7Sheet(
-                id = "sheet",
-                label = "More",
-                orientation = "bottom",
-                swipeToClose = TRUE,
-                swipeToStep = TRUE,
-                backdrop = TRUE,
-                "Issokantis langas"
-              )
         ),
         .items = f7TabLink(
           icon = f7Icon("bolt_fill"),

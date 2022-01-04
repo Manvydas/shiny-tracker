@@ -33,8 +33,6 @@ function(input, output, session) {
         users$info_table <- data.frame(
           uid = uid,
           username = "default",
-          age = 26,
-          weight = 95,
           unit = "kg"
         )
         dbWriteTable(
