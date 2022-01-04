@@ -2,7 +2,6 @@ function(input, output, session) {
   
   users <- reactiveValues(
     auth = FALSE,
-    uid = 1,
     excers = list(
       bech = list(
         name = "Bench Press",
@@ -19,8 +18,36 @@ function(input, output, session) {
   
   observe({
     users$auth <- TRUE
+    users$uid <- 1
   }) %>% 
     bindEvent(input$auth)
+  
+  observe({
+    if (users$auth) {
+      uid <- users$uid
+      users$info_table <- tbl(conn, "users") %>% 
+        filter(uid == uid) %>% 
+        collect()
+      print(users$info_table)
+      if (nrow(users$info_table) == 0) {
+        users$info_table <- data.frame(
+          uid = uid,
+          username = "default",
+          age = 26,
+          weight = 95,
+          unit = "kg"
+        )
+        dbWriteTable(
+          conn = conn,
+          name = "users",
+          users$info_table,
+          append = TRUE
+        )
+      }
+    }
+  }) %>% 
+    bindEvent(users$auth)
+  
   
   output$list_excers <- renderUI({
     if (users$auth) {
