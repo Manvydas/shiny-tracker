@@ -20,6 +20,20 @@ shinyUI(
             inputId = "auth",
             label = "Login"
           ),
+          f7Select(
+            inputId = "age",
+            label = "Age",
+            choices = 1:100
+          ),
+          f7Select(
+            inputId = "weight",
+            label = "Weight",
+            choices = 1:150
+          ),
+          f7Button(
+            inputId = "update_metrics",
+            label = "Update metrics"
+          ),
           f7Sheet(
             id = "sheet",
             label = "More",

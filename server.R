@@ -25,12 +25,12 @@ function(input, output, session) {
   observe({
     if (users$auth) {
       uid <- users$uid
-      users$info_table <- tbl(conn, "users") %>% 
+      users$data <- tbl(conn, "users") %>% 
         filter(uid == uid) %>% 
         collect()
-      print(users$info_table)
-      if (nrow(users$info_table) == 0) {
-        users$info_table <- data.frame(
+      print(users$data)
+      if (nrow(users$data) == 0) {
+        users$data <- data.frame(
           uid = uid,
           username = "default",
           unit = "kg"
@@ -38,15 +38,29 @@ function(input, output, session) {
         dbWriteTable(
           conn = conn,
           name = "users",
-          users$info_table,
+          users$data,
           append = TRUE
         )
       }
+      users$info <- fetchUserInfo(conn = conn, uid = users$uid)
     }
   }) %>% 
     bindEvent(users$auth)
   
-  
+  observe({
+    if (users$auth) {
+      updateF7Select(
+        inputId = "age",
+        selected = users$info$age
+      )
+      updateF7Select(
+        inputId = "weight",
+        selected = users$info$weight
+      )
+    }
+  }) %>% 
+    bindEvent(users$info)
+    
   output$list_excers <- renderUI({
     if (users$auth) {
       purrr::map(
@@ -88,4 +102,16 @@ function(input, output, session) {
     }
   }) %>% 
     bindEvent(input$new_excer_save)
+  
+  observe({
+    if (users$auth){
+      updateUserInfo(
+        conn = conn,
+        age = input$age,
+        weight = input$weight,
+        uid = users$uid
+      )
+    }
+  }) %>% 
+    bindEvent(input$update_metrics)
 }
