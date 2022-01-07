@@ -26,14 +26,13 @@ updateUserInfo <- function(conn, uid, age = NA, weight = NA) {
   query <- "UPDATE user_info SET age = ?age, weight = ?weight WHERE uid = ?uid"
   age <- as.integer(age)
   weight <- as.integer(weight)
-  uid <- as.character(uid)
-  
+
   query_interp <- sqlInterpolate(
     conn = conn,
     sql = query,
+    uid = uid_input,
     age = age,
-    weight = weight,
-    uid = uid
+    weight = weight
   )
   
   dbExecute(conn = conn, query_interp)
@@ -53,5 +52,33 @@ fetchUserInfo <- function(conn, uid) {
   if (nrow(user_data) == 0) return(data.frame(uid = uid, age = 0, weight = 0))
 
   return(user_data)
+  
+}
+
+updateExercises <- function(conn, uid, new_exer) {
+  
+  uid_input <- as.character(uid)
+  user_data <- tbl(conn, "exercises") %>% 
+    filter(uid == uid_input) %>% 
+    collect()
+  exers <- fromJSON(user_data$exercises)
+  if (names(new_exer) %in% names(exers)) stop("Exercise already exist")
+  if (nchar(names(new_exer)) < 1) stop("No name provided")
+  exers <- exers %>% 
+    append(new_exer)
+  
+  exers_json <- toJSON(exers)
+  query <- "UPDATE exercises SET exercises = ?exers WHERE uid = ?uid"
+
+  query_interp <- sqlInterpolate(
+    conn = conn,
+    sql = query,
+    uid = uid_input,
+    exers = exers_json
+  )
+  
+  dbExecute(conn = conn, query_interp)
+  
+  return(exers)
   
 }

@@ -2,18 +2,7 @@ function(input, output, session) {
   
   users <- reactiveValues(
     auth = FALSE,
-    excers = list(
-      bech = list(
-        name = "Bench Press",
-        descr = "Flat bench barbell press",
-        image_url = "https://upload.wikimedia.org/wikipedia/commons/a/a8/Bench-press-1.png"
-      ),
-      squat = list(
-        name = "Squat",
-        descr = "Barbell squat",
-        image_url = "https://upload.wikimedia.org/wikipedia/commons/6/6f/Squats-2.png"
-      )
-    )
+    exers = list()
   )
   
   observe({
@@ -28,7 +17,6 @@ function(input, output, session) {
       users$data <- tbl(conn, "users") %>% 
         filter(uid == uid) %>% 
         collect()
-      print(users$data)
       if (nrow(users$data) == 0) {
         users$data <- data.frame(
           uid = uid,
@@ -49,6 +37,30 @@ function(input, output, session) {
   
   observe({
     if (users$auth) {
+      uid <- users$uid
+      exers_df <- tbl(conn, "exercises") %>% 
+        filter(uid == uid) %>% 
+        collect()
+      if (nrow(exers_df) == 0) {
+        exers_df <- data.frame(
+          uid = uid,
+          exercises = "{}"
+        )
+        dbWriteTable(
+          conn = conn,
+          name = "exercises",
+          exers_df,
+          append = TRUE
+        )
+      }
+      users$exers <- exers_df$exercises %>% 
+        fromJSON()
+    }
+  }) %>% 
+    bindEvent(users$auth)
+  
+  observe({
+    if (users$auth) {
       updateF7Select(
         inputId = "age",
         selected = users$info$age
@@ -60,12 +72,12 @@ function(input, output, session) {
     }
   }) %>% 
     bindEvent(users$info)
-    
-  output$list_excers <- renderUI({
+  
+  output$list_exers <- renderUI({
     if (users$auth) {
       purrr::map(
-        .x = users$excers,
-        .f = function(excer) {
+        .x = users$exers,
+        .f = function(exer) {
           tags$div(
             style = "
             background-color: white;
@@ -76,32 +88,37 @@ function(input, output, session) {
             ",
             tags$img(
               style = "width: 100%;",
-              src = excer$image_url
+              src = exer$image_url
             ),
-            tags$h2(excer$name),
-            tags$p(excer$descr)
+            tags$h2(exer$name),
+            tags$p(exer$descr)
             
           )
         }
       )
     }
   }) %>% 
-    bindEvent(users$excers, users$auth)
+    bindEvent(users$exers, users$auth)
   
   observe({
     if (users$auth) {
-      new_excer <- list(
+      uid <- users$uid
+      new_exer <- list(
         name = list(
-          name = input$new_excer_name,
-          descr = input$new_excer_descr,
-          image_url = input$new_excer_url
+          name = input$new_exer_name,
+          descr = input$new_exer_descr,
+          image_url = input$new_exer_url
         )
       )
-      names(new_excer) <- input$new_excer_name
-      users$excers <- users$excers %>% append(new_excer)
+      names(new_exer) <- input$new_exer_name
+      users$exers <- updateExercises(
+        conn = conn,
+        uid = uid,
+        new_exer = new_exer
+      )
     }
   }) %>% 
-    bindEvent(input$new_excer_save)
+    bindEvent(input$new_exer_save)
   
   observe({
     if (users$auth){

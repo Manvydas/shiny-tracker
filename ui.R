@@ -56,27 +56,27 @@ shinyUI(
           )
         ),
         f7Tab(
-          tabName = "excer",
+          tabName = "exer",
           uiOutput(
-            outputId = "list_excers"
+            outputId = "list_exers"
           )
         ),
         f7Tab(
-          tabName = "new_excer",
+          tabName = "new_exer",
           f7Text(
-            inputId = "new_excer_name",
-            label = "Name of the new excercise"
+            inputId = "new_exer_name",
+            label = "Name of the new exercise"
           ),
           f7TextArea(
-            inputId = "new_excer_descr",
-            label = "Excercise description"
+            inputId = "new_exer_descr",
+            label = "exercise description"
           ),
           f7Text(
-            inputId = "new_excer_url",
+            inputId = "new_exer_url",
             label = "Link to the image of exercise"
           ),
           f7Button(
-            inputId = "new_excer_save",
+            inputId = "new_exer_save",
             label = "Save"
           )
         ),
