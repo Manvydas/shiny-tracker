@@ -75,11 +75,13 @@ function(input, output, session) {
   
   output$list_exers <- renderUI({
     if (users$auth) {
-      purrr::map(
+      purrr::map2(
         .x = users$exers,
-        .f = function(exer) {
-          tags$div(
-            style = "
+        .y = seq_len(length(users$exers)),
+        .f = function(exer, index) {
+          tagList(
+            tags$div(
+              style = "
             background-color: white;
             padding: 5px 5px 5px 5px;
             max-width: 95%;
@@ -91,14 +93,28 @@ function(input, output, session) {
               src = exer$image_url
             ),
             tags$h2(exer$name),
-            tags$p(exer$descr)
-            
+            tags$p(exer$descr),
+            actionButton(
+              inputId = paste0("del_exer_", index),
+              label = "Delete"
+            )
+            )
           )
         }
       )
     }
   }) %>% 
     bindEvent(users$exers, users$auth)
+  
+  purrr::map(
+    .x = 1:100,
+    function(x) {
+      observe({
+        print(users$exers[[x]])
+      }) %>% 
+        bindEvent(input[[paste0("del_exer_", x)]])
+    }
+  )
   
   observe({
     if (users$auth) {
