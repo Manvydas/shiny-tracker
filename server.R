@@ -110,7 +110,15 @@ function(input, output, session) {
     .x = 1:100,
     function(x) {
       observe({
-        print(users$exers[[x]])
+        if (users$auth) {
+          uid <- users$uid
+          del_exer <- users$exers[[x]]$name
+          users$exers <- deleteExercises(
+            conn = conn,
+            uid = uid,
+            del_exer = del_exer
+          )
+        }
       }) %>% 
         bindEvent(input[[paste0("del_exer_", x)]])
     }

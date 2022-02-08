@@ -82,3 +82,33 @@ updateExercises <- function(conn, uid, new_exer) {
   return(exers)
   
 }
+
+
+
+deleteExercises <- function(conn, uid, del_exer) {
+  
+  uid_input <- as.character(uid)
+  user_data <- tbl(conn, "exercises") %>% 
+    filter(uid == uid_input) %>% 
+    collect()
+  exers <- fromJSON(user_data$exercises)
+  if (!del_exer %in% names(exers)) stop("Exercise does not exist")
+  if (nchar(del_exer) < 1) stop("No name provided")
+  
+  exers[[del_exer]] <- NULL
+  
+  exers_json <- toJSON(exers)
+  query <- "UPDATE exercises SET exercises = ?exers WHERE uid = ?uid"
+  
+  query_interp <- sqlInterpolate(
+    conn = conn,
+    sql = query,
+    uid = uid_input,
+    exers = exers_json
+  )
+  
+  dbExecute(conn = conn, query_interp)
+  
+  return(exers)
+  
+}
