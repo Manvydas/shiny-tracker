@@ -16,6 +16,12 @@ shinyUI(
           tabName = "main",
           active = TRUE,
           icon = f7Icon("bolt_fill"),
+          f7Text(
+            inputId = "user_id",
+            label = "ID",
+            value = 1,
+            placeholder = "Your ID goes here"
+          ),
           f7Button(
             inputId = "auth",
             label = "Login"

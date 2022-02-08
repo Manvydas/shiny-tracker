@@ -7,7 +7,7 @@ function(input, output, session) {
   
   observe({
     users$auth <- TRUE
-    users$uid <- 1
+    users$uid <- input$user_id
   }) %>% 
     bindEvent(input$auth)
   
@@ -94,7 +94,7 @@ function(input, output, session) {
             ),
             tags$h2(exer$name),
             tags$p(exer$descr),
-            actionButton(
+            f7Button(
               inputId = paste0("del_exer_", index),
               label = "Delete"
             )
